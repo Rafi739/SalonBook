@@ -2,8 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import type { Metadata } from "next"
 
 import "./globals.css"
-import { Footer } from "@/components/footer"
-import { Navbar } from "@/components/navbar"
+import { SiteShell } from "@/components/site-shell"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 
@@ -39,9 +38,7 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
+          <SiteShell>{children}</SiteShell>
         </ThemeProvider>
       </body>
     </html>
