@@ -51,7 +51,7 @@ export default function Home() {
               a breath, and leave feeling more like yourself.
             </p>
             <Link
-              href="#services"
+              href="/services"
               className="mt-9 inline-flex min-h-12 items-center justify-center rounded-full bg-[#d6bb84] px-6 text-sm font-semibold text-[#292722] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d6bb84]"
             >
               Explore our services
@@ -77,6 +77,12 @@ export default function Home() {
             and a little more time for you.
           </p>
         </div>
+        <Link
+          href="/services"
+          className="mt-6 inline-flex min-h-10 items-center text-sm font-semibold underline decoration-accent underline-offset-4 hover:text-muted-foreground"
+        >
+          Browse the service menu
+        </Link>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {services.map((service) => (
             <article
