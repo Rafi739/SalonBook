@@ -8,22 +8,38 @@ import { signIn, signUp } from "@/lib/auth-client"
 
 type AuthFormProps = {
   mode: "sign-in" | "sign-up"
+  callbackUrl?: string
 }
 
-export function AuthForm({ mode }: AuthFormProps) {
+export function AuthForm({ mode, callbackUrl }: AuthFormProps) {
   const router = useRouter()
   const [errorMessage, setErrorMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [passwordValue, setPasswordValue] = useState("")
+  const [confirmPasswordValue, setConfirmPasswordValue] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordsDoNotMatch, setPasswordsDoNotMatch] = useState(false)
   const isSignUp = mode === "sign-up"
+  const alternateAuthPath = isSignUp ? "/sign-in" : "/sign-up"
+  const query = callbackUrl ? { callbackUrl } : {}
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setErrorMessage("")
-    setIsSubmitting(true)
 
     const formData = new FormData(event.currentTarget)
     const email = String(formData.get("email"))
     const password = String(formData.get("password"))
+    const confirmPassword = String(formData.get("confirmPassword"))
+
+    if (isSignUp && password !== confirmPassword) {
+      setPasswordsDoNotMatch(true)
+      return
+    }
+
+    setPasswordsDoNotMatch(false)
+    setIsSubmitting(true)
 
     try {
       const result = isSignUp
@@ -39,7 +55,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         return
       }
 
-      router.push("/")
+      router.push(callbackUrl ?? "/")
       router.refresh()
     } catch (error) {
       setErrorMessage(
@@ -89,17 +105,95 @@ export function AuthForm({ mode }: AuthFormProps) {
               required
             />
           </label>
-          <label className="block text-sm font-medium">
-            Password
-            <input
-              className="auth-field"
-              type="password"
-              name="password"
-              autoComplete={isSignUp ? "new-password" : "current-password"}
-              minLength={8}
-              required
-            />
-          </label>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                className="auth-field pr-16"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                autoComplete={isSignUp ? "new-password" : "current-password"}
+                minLength={8}
+                required
+                value={passwordValue}
+                onChange={(event) => {
+                  const value = event.currentTarget.value
+                  setPasswordValue(value)
+                  if (passwordsDoNotMatch) {
+                    setPasswordsDoNotMatch(value !== confirmPasswordValue)
+                  }
+                }}
+              />
+              <button
+                type="button"
+                aria-label={`${showPassword ? "Hide" : "Show"} password`}
+                aria-controls="password"
+                aria-pressed={showPassword}
+                onClick={() => setShowPassword((visible) => !visible)}
+                className="absolute top-1/2 right-3 -translate-y-1/2 rounded px-2 py-1 text-xs font-semibold text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+          </div>
+
+          {isSignUp && (
+            <div>
+              <label
+                htmlFor="confirm-password"
+                className="block text-sm font-medium"
+              >
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  id="confirm-password"
+                  className="auth-field pr-16"
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                  value={confirmPasswordValue}
+                  aria-invalid={passwordsDoNotMatch}
+                  aria-describedby={
+                    passwordsDoNotMatch ? "confirm-password-error" : undefined
+                  }
+                  onChange={(event) => {
+                    const value = event.currentTarget.value
+                    setConfirmPasswordValue(value)
+                    if (passwordsDoNotMatch) {
+                      setPasswordsDoNotMatch(value !== passwordValue)
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  aria-label={`${showConfirmPassword ? "Hide" : "Show"} confirm password`}
+                  aria-controls="confirm-password"
+                  aria-pressed={showConfirmPassword}
+                  onClick={() =>
+                    setShowConfirmPassword((visible) => !visible)
+                  }
+                  className="absolute top-1/2 right-3 -translate-y-1/2 rounded px-2 py-1 text-xs font-semibold text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                >
+                  {showConfirmPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+              {passwordsDoNotMatch && (
+                <p
+                  id="confirm-password-error"
+                  role="alert"
+                  className="mt-2 text-sm text-destructive"
+                >
+                  Passwords do not match.
+                </p>
+              )}
+            </div>
+          )}
 
           {errorMessage && (
             <p role="alert" className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
@@ -123,7 +217,10 @@ export function AuthForm({ mode }: AuthFormProps) {
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {isSignUp ? "Already have an account?" : "New to SalonBook?"}{" "}
           <Link
-            href={isSignUp ? "/sign-in" : "/sign-up"}
+            href={{
+              pathname: alternateAuthPath,
+              query,
+            }}
             className="font-semibold text-foreground underline decoration-accent underline-offset-4"
           >
             {isSignUp ? "Sign in" : "Create an account"}

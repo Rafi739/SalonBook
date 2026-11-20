@@ -24,21 +24,19 @@ const appointmentStatusStyles: Record<AppointmentStatus, string> = {
 }
 
 const paymentStatusLabels: Record<PaymentStatus, string> = {
-  pending: "Pending",
+  unpaid: "Unpaid",
   paid: "Paid",
-  failed: "Failed",
-  refunded: "Refunded",
 }
 
 const paymentStatusStyles: Record<PaymentStatus, string> = {
-  pending: "bg-accent/25 text-foreground",
   paid: "bg-emerald-500/10 text-emerald-800 dark:text-emerald-200",
-  failed: "bg-destructive/10 text-destructive",
-  refunded: "bg-muted text-muted-foreground",
+  unpaid: "bg-accent/25 text-foreground",
 }
 
 function formatAppointmentDate(value: string) {
-  const date = new Date(value)
+  const date = new Date(
+    /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00` : value,
+  )
 
   if (Number.isNaN(date.getTime())) {
     return "Date unavailable"
@@ -49,15 +47,15 @@ function formatAppointmentDate(value: string) {
   }).format(date)
 }
 
-function formatAppointmentPrice(appointment: CustomerAppointment) {
-  if (!Number.isFinite(appointment.price.amount)) {
+function formatAppointmentPrice(amount: number) {
+  if (!Number.isFinite(amount)) {
     return "Price unavailable"
   }
 
   return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: appointment.price.currency,
-  }).format(appointment.price.amount)
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount)
 }
 
 function StatusBadge({
@@ -73,33 +71,6 @@ function StatusBadge({
     >
       {label}
     </span>
-  )
-}
-
-function AppointmentUnavailable() {
-  return (
-    <div
-      role="status"
-      className="rounded-2xl border border-dashed border-border bg-background/70 px-5 py-10 text-center sm:px-8"
-    >
-      <span className="mx-auto grid size-12 place-items-center rounded-full bg-secondary text-secondary-foreground">
-        <CalendarDays aria-hidden="true" size={21} strokeWidth={1.7} />
-      </span>
-      <h3 className="mt-4 font-heading text-xl font-medium tracking-tight">
-        Appointment history isn&apos;t connected yet
-      </h3>
-      <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
-        We don&apos;t have a booking data source to show your appointments, so
-        we won&apos;t display sample records. Your real booking history can
-        appear here when it is available.
-      </p>
-      <Link
-        href="/services"
-        className="mt-5 inline-flex min-h-10 items-center justify-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-      >
-        Browse services
-      </Link>
-    </div>
   )
 }
 
@@ -132,13 +103,9 @@ export function AppointmentList({
   appointments,
   compact = false,
 }: {
-  appointments: readonly CustomerAppointment[] | null
+  appointments: readonly CustomerAppointment[]
   compact?: boolean
 }) {
-  if (appointments === null) {
-    return <AppointmentUnavailable />
-  }
-
   if (appointments.length === 0) {
     return <NoAppointments />
   }
@@ -149,6 +116,9 @@ export function AppointmentList({
 
   return (
     <>
+      <p className="mb-3 text-xs text-muted-foreground">
+        Prices show the saved amount; the API does not include a currency code.
+      </p>
       <div className="hidden overflow-x-auto md:block">
         <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
           <caption className="sr-only">Your appointments</caption>
@@ -181,7 +151,7 @@ export function AppointmentList({
                 className="border-b border-border/70 last:border-0"
               >
                 <th scope="row" className="px-4 py-4 font-semibold">
-                  {appointment.serviceName}
+                  {appointment.service?.serviceName ?? "Service unavailable"}
                 </th>
                 <td className="px-4 py-4 text-muted-foreground">
                   {formatAppointmentDate(appointment.appointmentDate)}
@@ -190,7 +160,7 @@ export function AppointmentList({
                   {appointment.timeSlot}
                 </td>
                 <td className="px-4 py-4 font-medium">
-                  {formatAppointmentPrice(appointment)}
+                  {formatAppointmentPrice(appointment.servicePrice)}
                 </td>
                 <td className="px-4 py-4">
                   <StatusBadge
@@ -218,14 +188,16 @@ export function AppointmentList({
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="font-semibold">{appointment.serviceName}</h3>
+                <h3 className="font-semibold">
+                  {appointment.service?.serviceName ?? "Service unavailable"}
+                </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {formatAppointmentDate(appointment.appointmentDate)} ·{" "}
                   {appointment.timeSlot}
                 </p>
               </div>
               <p className="shrink-0 text-sm font-semibold">
-                {formatAppointmentPrice(appointment)}
+                {formatAppointmentPrice(appointment.servicePrice)}
               </p>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">

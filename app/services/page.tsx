@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { connection } from "next/server"
 
 import { ServicesBrowser } from "@/components/services/services-browser"
 import { getServices } from "@/lib/services"
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 }
 
 export default async function ServicesPage() {
+  await connection()
   const services = await getServices()
 
   return (

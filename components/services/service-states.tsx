@@ -11,11 +11,11 @@ export function ServiceEmptyState() {
         <Sparkles aria-hidden="true" size={21} strokeWidth={1.5} />
       </span>
       <h2 className="mt-5 font-heading text-2xl font-medium tracking-tight">
-        Our service menu is on its way
+        No services are available right now
       </h2>
       <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted-foreground">
-        The service catalog isn&apos;t connected yet. We&apos;ll share the menu
-        here once verified services are available.
+        The salon has not published any active services yet. Please check back
+        later to see the available menu.
       </p>
     </div>
   )

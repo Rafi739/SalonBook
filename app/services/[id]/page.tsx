@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { connection } from "next/server"
 import type { Metadata } from "next"
+import { CalendarDays } from "lucide-react"
 
 import { ServiceImage } from "@/components/services/service-image"
 import {
@@ -22,6 +24,7 @@ const categoryLabels = {
 export default async function ServiceDetailsPage({
   params,
 }: PageProps<"/services/[id]">) {
+  await connection()
   const { id } = await params
   const service = await getServiceById(id)
 
@@ -67,6 +70,16 @@ export default async function ServiceDetailsPage({
               </dd>
             </div>
           </dl>
+          <p className="mt-3 text-xs leading-5 text-muted-foreground">
+            The service API returns a numeric amount without a currency code.
+          </p>
+          <Link
+            href={`/services/${encodeURIComponent(service.id)}/book`}
+            className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:w-auto"
+          >
+            <CalendarDays aria-hidden="true" size={17} />
+            Book Appointment
+          </Link>
         </div>
       </div>
     </section>

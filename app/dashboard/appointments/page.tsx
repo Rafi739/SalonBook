@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { AppointmentList } from "@/components/dashboard/appointment-list"
+import { CustomerAppointmentHistory } from "@/components/dashboard/customer-appointment-history"
 
 export const metadata: Metadata = {
   title: "My Appointments",
@@ -24,7 +24,7 @@ export default function AppointmentsPage() {
         aria-label="Appointment list"
         className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-6"
       >
-        <AppointmentList appointments={null} />
+        <CustomerAppointmentHistory />
       </section>
     </div>
   )

@@ -37,9 +37,9 @@ export function ServicesBrowser({
     })
 
     if (sortOrder === "price-asc") {
-      filtered.sort((a, b) => a.price.amount - b.price.amount)
+      filtered.sort((a, b) => a.price - b.price)
     } else if (sortOrder === "price-desc") {
-      filtered.sort((a, b) => b.price.amount - a.price.amount)
+      filtered.sort((a, b) => b.price - a.price)
     }
 
     return filtered

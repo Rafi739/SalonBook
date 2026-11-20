@@ -19,3 +19,11 @@ To use the components in your app, import them as follows:
 ```tsx
 import { Button } from "@/components/ui/button";
 ```
+
+## Backend API
+
+The service catalog and appointment flow use the SalonBook backend API. Set
+`BACKEND_API_URL` to the backend origin or its `/api` path. Development defaults
+to `http://localhost:3000/api`; production deployments must configure an HTTPS
+URL. The frontend proxies browser requests through its same-origin
+`/backend-api` rewrite.
