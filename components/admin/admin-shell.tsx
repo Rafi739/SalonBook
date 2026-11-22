@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   CalendarDays,
@@ -97,7 +97,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const [retryCount, setRetryCount] = useState(0);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  const sessionUserId = sessionData?.user?.id;
+  const sessionUserId = sessionData?.user?.id ?? sessionData?.user?.email;
   const effectiveStatus: VerificationStatus =
     !isPending && !sessionUserId ? "unauthenticated" : status;
 
@@ -315,3 +315,4 @@ export function AdminShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
