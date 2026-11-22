@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google"
+﻿import { Geist, Geist_Mono } from "next/font/google"
 import type { Metadata } from "next"
 
 import "./globals.css"
@@ -14,14 +14,43 @@ const fontMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://salon-book-hazel.vercel.app"),
   title: {
     default: "SalonBook | A better kind of salon experience",
     template: "%s | SalonBook",
   },
   description:
-    "Discover thoughtful hair, grooming, and self-care services for everyone at SalonBook.",
+    "Discover thoughtful hair, grooming, and self-care services for everyone at SalonBook. Explore services and book your next salon appointment online.",
   applicationName: "SalonBook",
-  keywords: ["unisex salon", "hair", "grooming", "salon services"],
+  keywords: [
+    "SalonBook",
+    "unisex salon",
+    "salon appointment booking",
+    "hair services",
+    "grooming",
+    "self-care",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "SalonBook",
+    title: "SalonBook | A better kind of salon experience",
+    description:
+      "Find your style, explore salon services, and book an appointment with SalonBook.",
+  },
+  twitter: {
+    card: "summary",
+    title: "SalonBook | A better kind of salon experience",
+    description:
+      "Explore thoughtful salon services and book your next appointment online.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({
