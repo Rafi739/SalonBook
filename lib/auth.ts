@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { jwt } from "better-auth/plugins/jwt";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
+import { ObjectId } from "mongodb";
 import { connectDB, client } from "@/lib/mongodb";
 
 const db = await connectDB();
@@ -25,6 +26,34 @@ export const auth = betterAuth({
       },
     }),
   ],
+
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          const users = db.collection("users");
+          const now = new Date();
+
+          await users.updateOne(
+            { email: user.email.toLowerCase() },
+            {
+              $setOnInsert: {
+                _id: new ObjectId(),
+                name: user.name,
+                email: user.email.toLowerCase(),
+                image: user.image ?? "",
+                role: "customer",
+                isBlocked: false,
+                createdAt: user.createdAt ?? now,
+                updatedAt: now,
+              },
+            },
+            { upsert: true },
+          );
+        },
+      },
+    },
+  },
 
   emailAndPassword: {
     enabled: true,
