@@ -1,6 +1,6 @@
-"use client"
+﻿"use client"
 
-import { Menu, X } from "lucide-react"
+import { Menu, X, Search } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -22,7 +22,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/95 backdrop-blur-md">
-      <div className="site-container flex h-[4.75rem] items-center justify-between gap-5">
+      <div className="site-container flex min-h-[4.75rem] items-center justify-between gap-4">
         <Link
           href="/"
           className="flex shrink-0 items-center gap-2.5 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
@@ -37,7 +37,7 @@ export function Navbar() {
           </span>
         </Link>
 
-        <nav aria-label="Main navigation" className="hidden items-center gap-6 lg:flex">
+        <nav aria-label="Main navigation" className="hidden items-center gap-4 xl:flex">
           {navigation.map((item) => (
             <Link
               key={item.label}
@@ -50,15 +50,48 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
+          <form action="/services" method="GET" className="flex items-center gap-1.5">
+            <label htmlFor="global-service-search" className="sr-only">
+              Search salon services
+            </label>
+            <input
+              id="global-service-search"
+              name="search"
+              type="search"
+              placeholder="Search services..."
+              className="h-9 w-36 rounded-full border border-border bg-background px-3 text-xs outline-none focus:border-primary xl:w-40"
+            />
+            <label htmlFor="global-service-sort" className="sr-only">
+              Sort services by price
+            </label>
+            <select
+              id="global-service-sort"
+              name="sort"
+              defaultValue="default"
+              className="h-9 max-w-28 rounded-full border border-border bg-background px-2 text-xs outline-none focus:border-primary"
+            >
+              <option value="default">Sort price</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
+            <button
+              type="submit"
+              aria-label="Search services"
+              className="grid size-9 place-items-center rounded-full bg-primary text-primary-foreground transition-colors hover:bg-primary/85"
+            >
+              <Search size={15} aria-hidden="true" />
+            </button>
+          </form>
+
           <Link
             href="/sign-in"
-            className="rounded-full px-4 py-2 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="rounded-full px-3 py-2 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Sign in
           </Link>
           <Link
             href="/sign-up"
-            className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Create account
           </Link>
@@ -93,6 +126,41 @@ export function Navbar() {
                 {item.label}
               </Link>
             ))}
+
+            <form action="/services" method="GET" className="mt-3 grid gap-2 border-t border-border pt-4">
+              <label htmlFor="mobile-service-search" className="text-xs font-semibold text-muted-foreground">
+                Search services
+              </label>
+              <input
+                id="mobile-service-search"
+                name="search"
+                type="search"
+                placeholder="Service name..."
+                className="h-11 rounded-xl border border-border bg-background px-3 text-sm outline-none focus:border-primary"
+              />
+              <label htmlFor="mobile-service-sort" className="text-xs font-semibold text-muted-foreground">
+                Sort by price
+              </label>
+              <select
+                id="mobile-service-sort"
+                name="sort"
+                defaultValue="default"
+                className="h-11 rounded-xl border border-border bg-background px-3 text-sm outline-none focus:border-primary"
+              >
+                <option value="default">Default order</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+              </select>
+              <button
+                type="submit"
+                onClick={closeMenu}
+                className="mt-1 flex h-11 items-center justify-center gap-2 rounded-xl bg-primary text-sm font-semibold text-primary-foreground hover:bg-primary/85"
+              >
+                <Search size={16} aria-hidden="true" />
+                Find services
+              </button>
+            </form>
+
             <div className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-4">
               <Link
                 href="/sign-in"

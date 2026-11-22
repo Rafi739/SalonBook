@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useMemo, useState } from "react"
 
@@ -16,23 +16,33 @@ import { ServiceSort, type ServiceSortOrder } from "./service-sort"
 type ServicesBrowserProps = {
   services: Service[]
   initialCategory?: ServiceCategory | "all"
+  initialSearch?: string
+  initialSort?: ServiceSortOrder
 }
 
 export function ServicesBrowser({
   services,
   initialCategory = "all",
+  initialSearch = "",
+  initialSort = "default",
 }: ServicesBrowserProps) {
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState(initialSearch)
   const [category, setCategory] =
     useState<ServiceCategory | "all">(initialCategory)
-  const [sortOrder, setSortOrder] = useState<ServiceSortOrder>("default")
-  const hasFilters = search.trim().length > 0 || category !== "all"
+  const [sortOrder, setSortOrder] = useState<ServiceSortOrder>(initialSort)
+
+  const hasFilters =
+    search.trim().length > 0 ||
+    category !== "all" ||
+    sortOrder !== "default"
 
   const filteredServices = useMemo(() => {
     const query = search.trim().toLocaleLowerCase()
+
     const filtered = services.filter((service) => {
       const matchesSearch = service.name.toLocaleLowerCase().includes(query)
       const matchesCategory = category === "all" || service.category === category
+
       return matchesSearch && matchesCategory
     })
 
@@ -58,12 +68,13 @@ export function ServicesBrowser({
           <ServiceSearch value={search} onChange={setSearch} />
           <ServiceSort value={sortOrder} onChange={setSortOrder} />
         </div>
+
         <div className="mt-5 flex flex-col gap-5 border-t border-border pt-5 sm:flex-row sm:items-end sm:justify-between">
           <ServiceCategoryFilter value={category} onChange={setCategory} />
           <button
             type="button"
             onClick={clearFilters}
-            disabled={!hasFilters && sortOrder === "default"}
+            disabled={!hasFilters}
             className="min-h-10 self-start text-sm font-medium text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 sm:self-auto"
           >
             Clear filters
