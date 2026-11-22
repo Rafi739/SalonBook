@@ -1,29 +1,31 @@
-export const BACKEND_API_PROXY_PATH = "/backend-api"
+
+export const BACKEND_API_PROXY_PATH = "/backend-api";
 
 export class BackendApiError extends Error {
   constructor(
     public readonly status: number,
     message: string,
   ) {
-    super(message)
-    this.name = "BackendApiError"
+    super(message);
+    this.name = "BackendApiError";
   }
 }
 
 export function getBackendApiBaseUrl(): string | null {
-  const configuredUrl = process.env.BACKEND_API_URL?.trim()
+  const configuredUrl = process.env.BACKEND_API_URL?.trim();
 
   if (!configuredUrl) {
     return process.env.NODE_ENV === "development"
-      ? "http://localhost:3000/api"
-      : null
+      ? "http://localhost:4000/api"
+      : null;
   }
 
-  let url: URL
+  let url: URL;
+
   try {
-    url = new URL(configuredUrl)
+    url = new URL(configuredUrl);
   } catch {
-    throw new Error("BACKEND_API_URL must be a valid URL.")
+    throw new Error("BACKEND_API_URL must be a valid URL.");
   }
 
   if (
@@ -33,41 +35,64 @@ export function getBackendApiBaseUrl(): string | null {
     url.search !== "" ||
     url.hash !== ""
   ) {
-    throw new Error("BACKEND_API_URL must be an HTTP(S) URL without credentials or query parameters.")
+    throw new Error(
+      "BACKEND_API_URL must be an HTTP(S) URL without credentials or query parameters.",
+    );
   }
 
-  if (process.env.NODE_ENV === "production" && url.protocol !== "https:") {
-    throw new Error("BACKEND_API_URL must use HTTPS in production.")
+  const isLocalhost =
+    url.hostname === "localhost" || url.hostname === "127.0.0.1";
+
+  if (
+    process.env.NODE_ENV === "production" &&
+    url.protocol !== "https:" &&
+    !isLocalhost
+  ) {
+    throw new Error("BACKEND_API_URL must use HTTPS in production.");
   }
 
-  const path = url.pathname.replace(/\/+$/, "")
+  const path = url.pathname.replace(/\/+$/, "");
+
   if (path !== "" && path !== "/api") {
-    throw new Error("BACKEND_API_URL must point to the backend origin or its /api path.")
+    throw new Error(
+      "BACKEND_API_URL must point to the backend origin or its /api path.",
+    );
   }
 
-  return `${url.origin}${path || "/api"}`
+  return `${url.origin}${path || "/api"}`;
 }
 
-export function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value)
+export function isRecord(
+  value: unknown,
+): value is Record<string, unknown> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value)
+  );
 }
 
-export async function readJsonResponse(response: Response): Promise<unknown> {
+export async function readJsonResponse(
+  response: Response,
+): Promise<unknown> {
   try {
-    const body: unknown = await response.json()
-    return body
+    const body: unknown = await response.json();
+    return body;
   } catch (error) {
     if (error instanceof SyntaxError) {
-      return null
+      return null;
     }
-    throw error
+
+    throw error;
   }
 }
 
-export function readBackendErrorMessage(value: unknown): string | undefined {
+export function readBackendErrorMessage(
+  value: unknown,
+): string | undefined {
   if (!isRecord(value) || typeof value.message !== "string") {
-    return undefined
+    return undefined;
   }
 
-  return value.message
+  return value.message;
 }
