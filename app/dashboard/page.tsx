@@ -1,11 +1,10 @@
-import type { Metadata } from "next"
-
-import { DashboardOverview } from "@/components/dashboard/dashboard-overview"
+﻿import type { Metadata } from "next";
+import CustomerOverview from "@/components/customer/customer-overview";
 
 export const metadata: Metadata = {
   title: "Dashboard",
-}
+};
 
-export default function DashboardPage() {
-  return <DashboardOverview />
+export default function CustomerDashboardPage() {
+  return <CustomerOverview />;
 }

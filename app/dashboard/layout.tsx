@@ -1,9 +1,10 @@
-import type { ReactNode } from "react"
+﻿import type { ReactNode } from "react";
+import CustomerShell from "@/components/customer/customer-shell";
 
-import { DashboardShell } from "@/components/dashboard/dashboard-shell"
-
-export default function DashboardLayout({
+export default function CustomerDashboardLayout({
   children,
-}: Readonly<{ children: ReactNode }>) {
-  return <DashboardShell>{children}</DashboardShell>
+}: Readonly<{
+  children: ReactNode;
+}>) {
+  return <CustomerShell>{children}</CustomerShell>;
 }
