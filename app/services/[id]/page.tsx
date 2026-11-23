@@ -1,4 +1,4 @@
-import Link from "next/link"
+﻿import Link from "next/link"
 import { notFound } from "next/navigation"
 import { connection } from "next/server"
 import type { Metadata } from "next"
@@ -11,9 +11,7 @@ import {
   getServiceById,
 } from "@/lib/services"
 
-export const metadata: Metadata = {
-  title: "Service details",
-}
+const baseUrl = "https://salon-book-hazel.vercel.app"
 
 const categoryLabels = {
   mens: "Men's",
@@ -21,9 +19,54 @@ const categoryLabels = {
   unisex: "Unisex",
 } as const
 
+type ServicePageProps = {
+  params: Promise<{ id: string }>
+}
+
+export async function generateMetadata({
+  params,
+}: ServicePageProps): Promise<Metadata> {
+  const { id } = await params
+  const service = await getServiceById(id)
+
+  if (!service) {
+    return {
+      title: "Service Not Found",
+      description: "The requested salon service could not be found.",
+      robots: { index: false, follow: false },
+    }
+  }
+
+  const description =
+    service.description.slice(0, 155) ||
+    `Explore ${service.name} at SalonBook. View pricing and book your appointment online.`
+
+  const pageUrl = `${baseUrl}/services/${encodeURIComponent(service.id)}`
+
+  return {
+    title: `${service.name} | SalonBook`,
+    description,
+    alternates: { canonical: pageUrl },
+    openGraph: {
+      title: `${service.name} | SalonBook`,
+      description,
+      url: pageUrl,
+      siteName: "SalonBook",
+      type: "website",
+      images: service.imageUrl ? [{ url: service.imageUrl }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${service.name} | SalonBook`,
+      description,
+      images: service.imageUrl ? [service.imageUrl] : [],
+    },
+  }
+}
+
 export default async function ServiceDetailsPage({
   params,
-}: PageProps<"/services/[id]">) {
+}: ServicePageProps) {
   await connection()
   const { id } = await params
   const service = await getServiceById(id)
